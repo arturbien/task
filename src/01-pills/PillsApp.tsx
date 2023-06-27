@@ -49,7 +49,21 @@ export const PillsApp = () => {
         Shuffle pills
       </button>
       <hr />
-      <Pills pills={pills} headers={headers} toggleHeader={toggleHeader} />
+      <div style={{ display: "flex" }}>
+        <div style={{ width: "50%" }}>
+          <h4>Regular</h4>
+          <Pills pills={pills} headers={headers} toggleHeader={toggleHeader} />
+        </div>
+        <div style={{ width: "50%" }}>
+          <h4>Bin packing (order not kept)</h4>
+          <Pills
+            pills={pills}
+            headers={headers}
+            toggleHeader={toggleHeader}
+            binPacking
+          />
+        </div>
+      </div>
     </>
   );
 };
