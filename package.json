@@ -30,7 +30,9 @@
     "not op_mini all"
   ],
   "eslintConfig": {
-    "extends": ["react-app", "eslint:recommended"],
+    "extends": ["react-app", "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"],
     "rules": {
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error"

@@ -1,16 +1,45 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import './widget.css';
+import "./widget.css";
+import { FrameMessageType, FrameSizeChangeMessage } from "./frameMessages";
 
 export const Widget = () => {
-  const [width, setWidth] = useState();
-  const iframeContainer = useRef<any>();
+  const [size, setSize] = useState({
+    width: 0,
+    height: 0,
+  });
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    const measurements = iframeContainer.current.getBoundingClientRect();
-    if (measurements) {
-      setWidth(measurements.width);
-    }
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const onFrameResizeMessage = (
+      message: MessageEvent<
+        FrameSizeChangeMessage | object | string | boolean | number
+      >
+    ) => {
+      // We might have multiple widgets displayed at the same time, so
+      // if the message comes from a different widget, we ignore it.
+      if (message.source !== iframe.contentWindow) return;
+
+      const data = message.data;
+      if (
+        typeof data === "object" &&
+        "type" in data &&
+        data.type === FrameMessageType.FrameSizeChange
+      ) {
+        setSize({
+          width: data.width,
+          height: data.height,
+        });
+      }
+    };
+
+    window.addEventListener("message", onFrameResizeMessage);
+    return () => {
+      window.removeEventListener("message", onFrameResizeMessage);
+    };
   }, []);
 
   return (
@@ -19,14 +48,15 @@ export const Widget = () => {
       <p>Check out our latest podcast</p>
       <div
         style={{
-          width: '100%',
-          overflow: 'hidden',
+          width: "100%",
+          overflow: "hidden",
         }}
-        ref={iframeContainer}
       >
+        {/* eslint-disable-next-line jsx-a11y/iframe-has-title */}
         <iframe
-          height="117px"
-          width={width}
+          ref={iframeRef}
+          width="100%"
+          height={size.height + "px"}
           src="/iframe"
           style={{ border: 0 }}
         />
